@@ -1,0 +1,9 @@
+<h1>Team page</h1>
+
+
+<strong>{{user.name}}</strong>
+ 
+ {{#each user.team.schedule}}
+ {{this.home}}
+ {{this.away}}
+ {{/each}}

@@ -17,11 +17,19 @@ const bcryptSalt = 10;
 authRoutes.get("/login", (req, res, next) => {
     res.render("authentication/login");
   });
+
   authRoutes.get("/signup", (req, res, next) => {
     res.render("authentication/signup");
   });
+
   authRoutes.get("/", (req, res, next) => {
     res.render("index", { "message": req.flash("error") });
+  });
+  
+  authRoutes.get("/teamPage", (req, res, next) => {
+     let user = req.session.currentUser
+    
+    res.render("authentication/teamPage", {user})
   });
 
 
@@ -33,15 +41,13 @@ authRoutes.post("/newUser", (req, res, next) => {
   let team = req.body.teams;
   const city = req.body.city;
   const airport = req.body.airport;
-    console.log('!!!!!! ',team)
-
-
+   
   if (email === "" || password === "") {
     res.render("authentication/signup", { message: "Please indicate email and password" });
     return;
   }
 
-  User.findOne({ email:email }, "email", (err, user) => {
+  User.findOne({email:email }, "email", (err, user) => {
     if (user !== null) {
       res.render("authentication/signup", { message: "Sorry, that email already exists" });
       return;
@@ -50,17 +56,6 @@ authRoutes.post("/newUser", (req, res, next) => {
     const salt = bcrypt.genSaltSync(bcryptSalt);
     const hashPass = bcrypt.hashSync(password, salt);
    
-    Team.findOne({ abbr:team })
-    .then(res => {
-        team = res
-    })
-
-    
-    // console.log("ewjhrjoehwjhasjdhfjahdshfiahiuhaewuhypre",team);
-    // const games = (Game.find({away:team}))
-    // console.log('kjdshfkjsadkjfkjdas',games)
-    //team.schedule.push(Game.find({away:team}))
-
       const newUser = new User({
       name: name,
       email: email,
@@ -68,6 +63,11 @@ authRoutes.post("/newUser", (req, res, next) => {
       team: team,
       city: city,
       airport: airport
+    });
+    Team.findOne({ abbr:team })
+    .then(res => {
+        newUser.team = res;
+        newUser.save();
     });
 
     newUser.save((err) => {
@@ -78,11 +78,11 @@ authRoutes.post("/newUser", (req, res, next) => {
       }
     });
   });
-}); // end sign up
+}); // end new user
 
 
 
-  router.post("/login", (req, res, next) => {
+  authRoutes.post("/login", (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
   
@@ -103,7 +103,7 @@ authRoutes.post("/newUser", (req, res, next) => {
         if (bcrypt.compareSync(password, user.password)) {
           // Save the login in the session!
           req.session.currentUser = user;
-          res.redirect("/");
+          res.redirect("/teamPage");
         } else {
           res.render("authentication/login", {
             errorMessage: "Incorrect password"
@@ -112,12 +112,13 @@ authRoutes.post("/newUser", (req, res, next) => {
     });
   }); // end login
 
-//   authRoutes.get("/teamPage", (req, res, next) => {
-//     Team.find({schedule: {$all: [{ "$elemMatch" : { size: "M" } }] } }, function(err, employee) {
-//         res.render('authentication/teamPage', {employee});
-//      });
+
+  // authRoutes.get("/teamPage/:id", (req, res, next) => {
+  //   // Team.find({schedule: {$all: [{ "$elemMatch" : { away: user.team } }] } }, function(err, employee) {
+  //   //     res.render('authentication/teamPage', {employee});
+  //   //  });
     
-//     })
+  //   })
 
 
 
