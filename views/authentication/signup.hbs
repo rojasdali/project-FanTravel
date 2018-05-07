@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="stylesheets/style.css">
+  <title>Sign Up</title>
+</head>
+
+<body>
+  <form id="form" action="/newUser" method="POST">
+    <label for="name">Name</label><br>
+    <input type="text" name="name"
+      placeholder="First Last">
+    <br><br>
+    <label for="email">Email</label><br>
+    <input type="text" name="email"
+      placeholder="ex: yourEmail@gmail.com">
+    <br><br>
+    <label for="password">Password</label><br>
+    <input type="password" name="password"
+      placeholder="******">
+    <br><br>
+  <select name="teams">
+  <option name="team" value="MIA">Miami Dolphins</option>
+</select>
+ <br><br>
+    <label for="city">City you're From</label><br>
+    <input type="text" name="city"
+      placeholder="ex: New York">
+<br><br>
+    <label for="airport">You're nearest Airport</label><br>
+    <input type="text" name="airport"
+      placeholder="ex: FLL">
+    <br><br>
+{{#if errorMessage}}
+  <div class="error-message">{{ errorMessage }}</div>
+{{/if}}
+    <button>Create account</button>
+  </form>
+</body>
+</html>
+
