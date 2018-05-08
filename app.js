@@ -14,7 +14,8 @@ const bcrypt         = require("bcrypt");
 const passport       = require("passport");
 const LocalStrategy  = require("passport-local").Strategy;
 const flash          = require("connect-flash");
-
+const btoa = require( "btoa" );
+const axios = require("axios")
 
 
 mongoose.Promise = Promise;
@@ -100,6 +101,30 @@ const index = require('./routes/index');
 app.use('/', index);
 const authRoutes = require('./routes/auth-routes')
 app.use('/', authRoutes);
+
+app.get('/schedule',(req,res,next) => {
+  axios({
+    method: "GET",
+    url: 'https://api.mysportsfeeds.com/v1.2/pull/nfl/2018-regular/full_game_schedule.json',
+    dataType: 'json',
+    async: false,
+    headers: {
+      "Authorization": "Basic " + btoa('rojasdali' + ":" + 'madden06')
+    },
+    data: 'hi',
+    success: function (){
+      alert('Thanks for your comment!'); 
+    }
+  })
+  .then(response =>{
+    res.json(response.data.fullgameschedule)
+   
+  })
+  
+})
+ 
+
+
 
 
 module.exports = app;

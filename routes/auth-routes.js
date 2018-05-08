@@ -56,27 +56,29 @@ authRoutes.post("/newUser", (req, res, next) => {
     const salt = bcrypt.genSaltSync(bcryptSalt);
     const hashPass = bcrypt.hashSync(password, salt);
    
-      const newUser = new User({
+      var newUser = new User({
       name: name,
       email: email,
       password: hashPass,
       team: team,
       city: city,
-      airport: airport
+      airport: airport,
+      schedule: Array
     });
+
     Team.findOne({ abbr:team })
     .then(res => {
         newUser.team = res;
-        newUser.save();
+    Game.find({away:team})
+    .then(res => {
+      newUser.team.schedule = res;
+      console.log(newUser)
+      newUser.save()
+    })
     });
 
-    newUser.save((err) => {
-      if (err) {
-        res.render("authentication/signup", { message: "Something went wrong" });
-      } else {
-        res.redirect("/login");
-      }
-    });
+     res.redirect("/login");
+   
   });
 }); // end new user
 
@@ -113,24 +115,16 @@ authRoutes.post("/newUser", (req, res, next) => {
   }); // end login
 
 
-  // authRoutes.get("/teamPage/:id", (req, res, next) => {
-  //   // Team.find({schedule: {$all: [{ "$elemMatch" : { away: user.team } }] } }, function(err, employee) {
-  //   //     res.render('authentication/teamPage', {employee});
-  //   //  });
-    
-  //   })
 
 
-
-
-// authRoutes.post("/", passport.authenticate("local",
-// {
-//   successRedirect: "/bossPage",
-//   failureRedirect: "/",
-//   failureFlash: true,
-//   passReqToCallback: true
-// }
-// ));
+authRoutes.post("authentication/teamPage", passport.authenticate("local",
+{
+  successRedirect: "/bossPage",
+  failureRedirect: "/",
+  failureFlash: true,
+  passReqToCallback: true
+}
+));
 
 // authRoutes.get("/logout", (req, res) => {
 //   req.logout();
