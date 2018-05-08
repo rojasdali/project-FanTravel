@@ -1,10 +1,25 @@
+<head><link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"></head>
 <h1>Team page</h1>
 
 
 <strong>Welcome, {{user.name}}! This is your team dashboard.</strong>
+ <br><br><br>
+ <table class = "table">
+  <tr>
+    <th>Week</th>
+    <th>Date</th> 
+    <th>Opponent</th>
+    <th>Time</th>
+  </tr>
+   {{#each team}}
+  <tr>
+   
+    <td>{{this.week}}</td>
+    <td>{{this.date}}</td> 
+    <td> @  <button class ="btn"><img src="/images/team-logos/{{this.homeTeam.Abbreviation}}.png" alt="" height = "30px" width = "30px";>{{this.homeTeam.Abbreviation}}</button></td>
+    <td>{{this.time}}</td>
+  </tr>
  
- {{#each user.team.schedule}}
-  
- @ <img src="{{this.logo}}" alt="" height = "30px" width = "30px";>{{this.home}}
 
  {{/each}}
+ </table>

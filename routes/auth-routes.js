@@ -6,7 +6,8 @@ const User        = require("../models/user");
 const Team        = require("../models/team")
 const Game        = require("../models/game")
 const flash       = require("connect-flash");
-
+const btoa = require( "btoa" );
+const axios = require("axios");
 const ensureLogin = require("connect-ensure-login");
 
 // Bcrypt to encrypt passwords
@@ -28,7 +29,9 @@ authRoutes.get("/login", (req, res, next) => {
   
   authRoutes.get("/teamPage", (req, res, next) => {
      let user = req.session.currentUser
-    
+     let team = res.locals.team
+     console.log(team)
+     console.log('Im inside of the teampage get!!')
     res.render("authentication/teamPage", {user})
   });
 
@@ -83,7 +86,46 @@ authRoutes.post("/newUser", (req, res, next) => {
 }); // end new user
 
 
-
+authRoutes.get('/schedule/:team',(req,res,next) => {
+  let teamAbbr = req.params.team
+  axios({
+    method: "GET",
+    url: 'https://api.mysportsfeeds.com/v1.2/pull/nfl/2018-regular/full_game_schedule.json?team='+teamAbbr,
+    dataType: 'json',
+    async: false,
+    headers: {
+      "Authorization": "Basic " + btoa('rojasdali' + ":" + 'madden06')
+    },
+    data: 'hi',
+    success: function (){
+      alert('Thanks for your comment!'); 
+    }
+  })
+  .then(response =>{
+    const awaySchedule = response.data.fullgameschedule.gameentry.filter(team => team.awayTeam.Abbreviation === teamAbbr)
+    
+    const homeAbbr = awaySchedule.map(schedule => {
+      Team.find({abbr: schedule.homeTeam.Abbreviation})
+      .then(team => {
+      //console.log(team[0].airport)
+      //have the destination airport here for flights query
+      
+      axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=0ZvBS2RYMAezAqBxLqpdDNOjSe3ikC9C&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+schedule.date+'&return_date=2019-02-17&number_of_results=1')
+      .then(flight => {
+       console.log(flight.data.results[0].fare.total_price)
+      })
+    })
+     
+      })
+    res.locals.team = awaySchedule.slice(0)
+    //console.log(res.locals.team)
+    res.render('authentication/teamPage')
+          
+  })
+  console.log(res.locals.team)
+  //res.redirect('../teamPage')
+  
+})
   authRoutes.post("/login", (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
@@ -105,7 +147,7 @@ authRoutes.post("/newUser", (req, res, next) => {
         if (bcrypt.compareSync(password, user.password)) {
           // Save the login in the session!
           req.session.currentUser = user;
-          res.redirect("/teamPage");
+          res.redirect("/schedule/"+user.team.abbr);
         } else {
           res.render("authentication/login", {
             errorMessage: "Incorrect password"
