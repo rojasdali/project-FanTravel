@@ -185,8 +185,8 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
         }
         if (bcrypt.compareSync(password, user.password)) {
           // Save the login in the session!
-          req.session.currentUser = user;
-          res.redirect("/schedule/"+user.team.abbr);
+          //req.session.currentUser = user;
+          //res.redirect("/schedule/"+user.team.abbr);
         } else {
           res.render("authentication/login", {
             errorMessage: "Incorrect password"
