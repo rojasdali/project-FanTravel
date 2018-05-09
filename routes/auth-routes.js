@@ -117,7 +117,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
     dataType: 'json',
     async: false,
     headers: {
-      "Authorization": "Basic " + btoa(sports_api_username + ":" + sports_api_password)
+      "Authorization": "Basic " + btoa(process.env.sports_api_username + ":" + process.env.sports_api_password)
     },
     data: 'hi',
     success: function (){
@@ -137,7 +137,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
       //console.log(team[0].airport)
       //have the destination airport here for flights query
      var flightDates = changeDatesToPassIntoFlightApi(schedule.date)
-      // axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey='+flight_api_key'+&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+flightDates[0]+'&return_date='+flightDates[1]+'&number_of_results=1')
+      // axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey='+process.env.flight_api_key'+&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+flightDates[0]+'&return_date='+flightDates[1]+'&number_of_results=1')
       // .then(flight => {
       //   const flights = (flight.data.results[0].fare.total_price)
      
