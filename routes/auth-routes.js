@@ -31,7 +31,6 @@ authRoutes.get("/login", (req, res, next) => {
      let user = req.session.currentUser
      let team = res.locals.team
      console.log(team)
-     console.log('Im inside of the teampage get!!')
     res.render("authentication/teamPage", {user})
   });
 
@@ -66,18 +65,13 @@ authRoutes.post("/newUser", (req, res, next) => {
       team: team,
       city: city,
       airport: airport,
-      schedule: Array
+      // schedule: using an Api
     });
 
     Team.findOne({ abbr:team })
     .then(res => {
         newUser.team = res;
-    Game.find({away:team})
-    .then(res => {
-      newUser.team.schedule = res;
-      console.log(newUser)
-      newUser.save()
-    })
+        newUser.save()
     });
 
      res.redirect("/login");
@@ -85,16 +79,45 @@ authRoutes.post("/newUser", (req, res, next) => {
   });
 }); // end new user
 
+const changeDatesToPassIntoFlightApi = (stringDate) =>{
+stringDate = stringDate.split('-')
+stringDate = stringDate.map(elem => {
+  return Number(elem)
+})
+deptTwoBefore = new Date(stringDate[0],stringDate[1],stringDate[2]-2)
+returnOneAfter = new Date(stringDate[0],stringDate[1],stringDate[2]+1)
+var backToString = new Date(deptTwoBefore),
+        month = '' + (backToString.getMonth()+1),
+        day = '' + backToString.getDate(),
+        year = backToString.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    deptTwoBefore = [year, month, day].join('-');
+
+    var backToString = new Date(returnOneAfter),
+        month = '' + (backToString.getMonth()+1),
+        day = '' + backToString.getDate(),
+        year = backToString.getFullYear();
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+   
+    returnOneAfter = [year, month, day].join('-');
+    var arrOfBothDates = [];
+    arrOfBothDates.push(deptTwoBefore,returnOneAfter)
+    return arrOfBothDates
+}
 
 authRoutes.get('/schedule/:team',(req,res,next) => {
   let teamAbbr = req.params.team
+  
   axios({
     method: "GET",
     url: 'https://api.mysportsfeeds.com/v1.2/pull/nfl/2018-regular/full_game_schedule.json?team='+teamAbbr,
     dataType: 'json',
     async: false,
     headers: {
-      "Authorization": "Basic " + btoa('rojasdali' + ":" + 'madden06')
+      "Authorization": "Basic " + btoa(sports_api_username + ":" + sports_api_password)
     },
     data: 'hi',
     success: function (){
@@ -103,28 +126,44 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
   })
   .then(response =>{
     const awaySchedule = response.data.fullgameschedule.gameentry.filter(team => team.awayTeam.Abbreviation === teamAbbr)
-    
-    const homeAbbr = awaySchedule.map(schedule => {
+      const flight = awaySchedule.map(schedule => {
+        console.log(schedule.id)
+       schedule.date = new Date(schedule.date)
+       var day = schedule.date.getDate() + 1
+       schedule.date.setDate(day)
+       schedule.date = schedule.date.toDateString()
       Team.find({abbr: schedule.homeTeam.Abbreviation})
       .then(team => {
       //console.log(team[0].airport)
       //have the destination airport here for flights query
-      
-      axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=0ZvBS2RYMAezAqBxLqpdDNOjSe3ikC9C&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+schedule.date+'&return_date=2019-02-17&number_of_results=1')
-      .then(flight => {
-       console.log(flight.data.results[0].fare.total_price)
-      })
-    })
+     var flightDates = changeDatesToPassIntoFlightApi(schedule.date)
+      // axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey='+flight_api_key'+&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+flightDates[0]+'&return_date='+flightDates[1]+'&number_of_results=1')
+      // .then(flight => {
+      //   const flights = (flight.data.results[0].fare.total_price)
      
-      })
+      //   console.log(flights)
+      //   // res.locals.team = awaySchedule.slice(0)
+      //   res.locals.flight = flight
+      //   console.log(awaySchedule)
+      //   //console.log(res.locals.team)
+      //   // res.render('authentication/teamPage')   
+      // })
+    })
+    .catch(err => {
+      next(err);
+    })
+   
+})
+    let user = req.session.currentUser
+    console.log(user)
+    res.locals.currentUser = user
+    res.locals.yourTeam = awaySchedule[0].awayTeam
     res.locals.team = awaySchedule.slice(0)
+    // res.locals.flight = flight
+    // console.log(awaySchedule)
     //console.log(res.locals.team)
-    res.render('authentication/teamPage')
-          
+    res.render('authentication/teamPage')   
   })
-  console.log(res.locals.team)
-  //res.redirect('../teamPage')
-  
 })
   authRoutes.post("/login", (req, res, next) => {
     const email = req.body.email;
@@ -159,10 +198,10 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
 
 
 
-authRoutes.post("authentication/teamPage", passport.authenticate("local",
+authRoutes.post("/schedule/:team", passport.authenticate("local",
 {
-  successRedirect: "/bossPage",
-  failureRedirect: "/",
+  successRedirect: "/authentication/teamPage",
+  failureRedirect: "/login",
   failureFlash: true,
   passReqToCallback: true
 }

@@ -7,7 +7,7 @@ const teamSchema = new Schema({
   abbr: String,
   airport: String,
   logo: String,
-  schedule: Array
+  //schedule: Using Api
 });
 
 const Team = mongoose.model("Team", teamSchema);
