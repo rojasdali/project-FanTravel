@@ -1,7 +1,7 @@
 
 <h1>Team page</h1>
-
-{{#each flight}} <p>{{this}}</p> {{/each}}
+{{flightList}}
+{{#each flightList}} <p>{{this}}</p> {{/each}}
 <strong>Welcome, {{currentUser.name}}. Go <img src="/images/team-logos/{{yourTeam.Abbreviation}}.png" alt="">   {{yourTeam.Name}}! This is your team dashboard.</strong> 
  <br><br><br>
  <div class = 'table-responsive'><table class = "table  table-hover table-dark">

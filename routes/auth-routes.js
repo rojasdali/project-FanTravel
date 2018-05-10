@@ -145,6 +145,7 @@ stringDate = stringDate.map(elem => {
 })
 deptTwoBefore = new Date(stringDate[0],stringDate[1],stringDate[2]-2)
 returnOneAfter = new Date(stringDate[0],stringDate[1],stringDate[2]+1)
+console.log('this dept two' , deptTwoBefore, returnOneAfter)
 var backToString = new Date(deptTwoBefore),
         month = '' + (backToString.getMonth()+1),
         day = '' + backToString.getDate(),
@@ -169,7 +170,7 @@ var backToString = new Date(deptTwoBefore),
 
 authRoutes.get('/schedule/:team',(req,res,next) => {
   let teamAbbr = req.params.team
-  
+ 
   axios({
     method: "GET",
     url: 'https://api.mysportsfeeds.com/v1.2/pull/nfl/2018-regular/full_game_schedule.json?team='+teamAbbr,
@@ -186,31 +187,36 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
   .then(response =>{
     const awaySchedule = response.data.fullgameschedule.gameentry.filter(team => team.awayTeam.Abbreviation === teamAbbr)
       const flight = awaySchedule.map(schedule => {
-        console.log(schedule.id)
-       schedule.date = new Date(schedule.date)
-       var day = schedule.date.getDate() + 1
+        let flightDates = changeDatesToPassIntoFlightApi(schedule.date)
+        schedule.date = new Date(schedule.date)
+       let day = schedule.date.getDate() + 1
        schedule.date.setDate(day)
        schedule.date = schedule.date.toDateString()
-    //   Team.find({abbr: schedule.homeTeam.Abbreviation})
-    //   .then(team => {
-    //   //console.log(team[0].airport)
-    //   //have the destination airport here for flights query
-    //  var flightDates = changeDatesToPassIntoFlightApi(schedule.date)
-    //   axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=+&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+flightDates[0]+'&return_date='+flightDates[1]+'&number_of_results=1')
-    //   .then(flight => {
-    //     const flights = (flight.data.results[0].fare.total_price)
-     
-    //     console.log(flights)
-    //     // res.locals.team = awaySchedule.slice(0)
-    //     res.locals.flight = flight
-    //     console.log(awaySchedule)
-    //     //console.log(res.locals.team)
-    //     // res.render('authentication/teamPage')   
-    //   })
-    // })
-    // .catch(err => {
-    //   next(err);
-    // })
+       console.log(flightDates)
+      Team.find({abbr: schedule.homeTeam.Abbreviation})
+      .then(team => {
+      //console.log(team[0].airport)
+      //have the destination airport here for flights query
+      // axios.get(`https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=QpXyD4VfMAqlAGjQdQ3pk2VmtEC3lBE1&origin=${teamAbbr}&destination=${team[0].airport}&departure_date=${flightDates[0]}&return_date=${flightDates[1]}&number_of_results=1`)
+      // .then(flight => {
+      //   const flights = (flight.data.results[0].fare.total_price)
+        
+      //   console.log(flights)
+      //    let data = {}
+      //    data.flightList = flights
+      //   // res.locals.team = awaySchedule.slice(0)
+       
+      //  // console.log(awaySchedule)
+      //   //console.log(res.locals.team)
+      //   // res.render('authentication/teamPage')
+       
+      // }).catch(err => {
+      //   next(err);
+      // })
+    })
+    .catch(err => {
+      next(err);
+    })
    
 })
     let user = req.session.currentUser
@@ -221,7 +227,9 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
     // res.locals.flight = flight
     // console.log(awaySchedule)
     //console.log(res.locals.team)
-    res.render('authentication/teamPage')   
+    res.render('authentication/teamPage')     
+    
+ 
   })
 })
   authRoutes.post("/login", (req, res, next) => {
