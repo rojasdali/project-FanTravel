@@ -3,27 +3,28 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
 
-{{currentUser}}
-{{#each theGame}}
+{{#each game}}
     {{ this.week }}
     {{ this.scheduleStatus }}
 {{/each}}
 
 
 
-<form id="form" action="/create" method="POST">
+<form id="form" action="/create/{{someGameId}}" method="POST">
     <label for="name">Post a comment</label><br>
     <input type="text" name="add"
       placeholder="Where's the best tailgate?">
-      <button>Post</button>
+      <button class ="btn-success">Post</button>
       </form>
 
     
     {{#each comment}}
-       <p>{{this.text}}</p>
-
-       <button id = {{this.userId}}>Edit</button>
-       <button id = {{this.userId}}>Delete</button>
+       Comment on {{this.created_at}} from: {{this.email}} <p>{{this.text}}</p>
+       {{#if this.isOwner}}
+       <button class = 'btn btn-primary'>Edit</button>
+       <button class = 'btn btn-primary'>Delete</button>
+       {{/if}}
+       
     {{/each}}
 
    

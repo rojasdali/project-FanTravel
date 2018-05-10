@@ -53,20 +53,21 @@ authRoutes.get("/login", (req, res, next) => {
     .then(response =>{
       const someGameId = req.params.id
       const theGame = response.data.fullgameschedule.gameentry.filter(team => team.id === someGameId)
-      console.log("this is the game ", theGame)
+      //console.log("this is the game ", theGame)
       Comment.find({gameId: someGameId})
      .then(comments => {
+      console.log(req.session.currentUser)
+      
+    comments.forEach(oneComment => {
+      // oneComment.userId.equals(req.user.id)
+      if(oneComment.userId.equals(req.session.currentUser._id)){
+        oneComment.isOwner = true;
+      }
 
-    //   isOwner = false;
-    // comments.forEach(oneComment => {
-    //   // oneComment.userId.equals(req.user.id)
-    //   if(oneComment.userId === req.user.id){
-    //     isOwner = true;
-    //   }
-
-    // })
+    })
       res.locals.comment = comments
-      res.render('authentication/gamePage', {theGame})
+      res.locals.game = theGame
+      res.render('authentication/gamePage',{someGameId})
         // res.render('authentication/gamePage', {isOwner});
      })
       
@@ -74,47 +75,22 @@ authRoutes.get("/login", (req, res, next) => {
    
   })
   
-  authRoutes.post("/game/:id", (req,res,next) =>{
-    const user = req.session.currentUser
-     const gameId = req.body.gameId
-     //console.log(user._id)
-    Comment.find({gameId: gameId})
-     .then(comments => {
 
-      isOwner = false;
-    comments.forEach(oneComment => {
-      // oneComment.userId.equals(req.user.id)
-      if(oneComment.userId === req.user.id){
-        isOwner = true;
-      }
 
+  authRoutes.post('/create/:id', (req, res, next) => {
+    const newComment = new Comment({
+      email: req.session.currentUser.email,
+      gameId: req.params.id,
+      userId: req.session.currentUser._id,
+      text: req.body.add
     })
-
-
-       console.log(comments.gameId)
-      res.locals.comment = comments
-        res.render('authentication/gamePage', {
-          isOwner
-        });
-     })
-  
-
-  })
-
-
-  // app.post('/create', (req, res, next) => {
-  //   const Comment = new Comment({
-  //     gameId: //,
-  //     userId: //,
-  //     text: req.body.add
-  //   })
-  //   newCharacter.save()
-  //   .then(res => {
-  //       // console.log(res)
-  //     })
-  //     .catch(err => {console.log(err)})
-  //     res.redirect('/')
-  //   })
+    newComment.save()
+    .then(res => {
+        // console.log(res)
+      })
+      .catch(err => {console.log(err)})
+      res.redirect('/game/'+req.params.id)
+    })
 
 
 
@@ -215,26 +191,26 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
        var day = schedule.date.getDate() + 1
        schedule.date.setDate(day)
        schedule.date = schedule.date.toDateString()
-      Team.find({abbr: schedule.homeTeam.Abbreviation})
-      .then(team => {
-      //console.log(team[0].airport)
-      //have the destination airport here for flights query
-     var flightDates = changeDatesToPassIntoFlightApi(schedule.date)
-      // axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey='+process.env.flight_api_key'+&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+flightDates[0]+'&return_date='+flightDates[1]+'&number_of_results=1')
-      // .then(flight => {
-      //   const flights = (flight.data.results[0].fare.total_price)
+    //   Team.find({abbr: schedule.homeTeam.Abbreviation})
+    //   .then(team => {
+    //   //console.log(team[0].airport)
+    //   //have the destination airport here for flights query
+    //  var flightDates = changeDatesToPassIntoFlightApi(schedule.date)
+    //   axios.get('https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=+&origin='+teamAbbr+'&destination='+team[0].airport+'&departure_date='+flightDates[0]+'&return_date='+flightDates[1]+'&number_of_results=1')
+    //   .then(flight => {
+    //     const flights = (flight.data.results[0].fare.total_price)
      
-      //   console.log(flights)
-      //   // res.locals.team = awaySchedule.slice(0)
-      //   res.locals.flight = flight
-      //   console.log(awaySchedule)
-      //   //console.log(res.locals.team)
-      //   // res.render('authentication/teamPage')   
-      // })
-    })
-    .catch(err => {
-      next(err);
-    })
+    //     console.log(flights)
+    //     // res.locals.team = awaySchedule.slice(0)
+    //     res.locals.flight = flight
+    //     console.log(awaySchedule)
+    //     //console.log(res.locals.team)
+    //     // res.render('authentication/teamPage')   
+    //   })
+    // })
+    // .catch(err => {
+    //   next(err);
+    // })
    
 })
     let user = req.session.currentUser
