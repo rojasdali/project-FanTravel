@@ -3,8 +3,9 @@ const passport   = require('passport');
 const authRoutes     = express.Router();
 // User model
 const User        = require("../models/user");
-const Team        = require("../models/team")
-const Game        = require("../models/game")
+const Team        = require("../models/team");
+const Game        = require("../models/game");
+const Comment     = require("../models/comment");
 const flash       = require("connect-flash");
 const btoa = require( "btoa" );
 const axios = require("axios");
@@ -33,6 +34,88 @@ authRoutes.get("/login", (req, res, next) => {
      console.log(team)
     res.render("authentication/teamPage", {user})
   });
+
+  authRoutes.get("/game/:id", (req,res,next) => {
+    let user = req.session.currentUser
+    axios({
+      method: "GET",
+      url: 'https://api.mysportsfeeds.com/v1.2/pull/nfl/2018-regular/full_game_schedule.json?team='+user.team.abbr,
+      dataType: 'json',
+      async: false,
+      headers: {
+        "Authorization": "Basic " + btoa(process.env.sports_api_username + ":" + process.env.sports_api_password)
+      },
+      data: 'hi',
+      success: function (){
+        alert('Thanks for your comment!'); 
+      }
+    })
+    .then(response =>{
+      const someGameId = req.params.id
+      const theGame = response.data.fullgameschedule.gameentry.filter(team => team.id === someGameId)
+      console.log("this is the game ", theGame)
+      Comment.find({gameId: someGameId})
+     .then(comments => {
+
+    //   isOwner = false;
+    // comments.forEach(oneComment => {
+    //   // oneComment.userId.equals(req.user.id)
+    //   if(oneComment.userId === req.user.id){
+    //     isOwner = true;
+    //   }
+
+    // })
+      res.locals.comment = comments
+      res.render('authentication/gamePage', {theGame})
+        // res.render('authentication/gamePage', {isOwner});
+     })
+      
+    })
+   
+  })
+  
+  authRoutes.post("/game/:id", (req,res,next) =>{
+    const user = req.session.currentUser
+     const gameId = req.body.gameId
+     //console.log(user._id)
+    Comment.find({gameId: gameId})
+     .then(comments => {
+
+      isOwner = false;
+    comments.forEach(oneComment => {
+      // oneComment.userId.equals(req.user.id)
+      if(oneComment.userId === req.user.id){
+        isOwner = true;
+      }
+
+    })
+
+
+       console.log(comments.gameId)
+      res.locals.comment = comments
+        res.render('authentication/gamePage', {
+          isOwner
+        });
+     })
+  
+
+  })
+
+
+  // app.post('/create', (req, res, next) => {
+  //   const Comment = new Comment({
+  //     gameId: //,
+  //     userId: //,
+  //     text: req.body.add
+  //   })
+  //   newCharacter.save()
+  //   .then(res => {
+  //       // console.log(res)
+  //     })
+  //     .catch(err => {console.log(err)})
+  //     res.redirect('/')
+  //   })
+
 
 
 
@@ -155,7 +238,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
    
 })
     let user = req.session.currentUser
-    console.log(user)
+    //console.log(user)
     res.locals.currentUser = user
     res.locals.yourTeam = awaySchedule[0].awayTeam
     res.locals.team = awaySchedule.slice(0)
@@ -185,8 +268,8 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
         }
         if (bcrypt.compareSync(password, user.password)) {
           // Save the login in the session!
-          //req.session.currentUser = user;
-          //res.redirect("/schedule/"+user.team.abbr);
+          req.session.currentUser = user;
+          res.redirect("/schedule/"+user.team.abbr);
         } else {
           res.render("authentication/login", {
             errorMessage: "Incorrect password"

@@ -4,19 +4,26 @@
 {{#each flight}} <p>{{this}}</p> {{/each}}
 <strong>Welcome, {{currentUser.name}}. Go <img src="/images/team-logos/{{yourTeam.Abbreviation}}.png" alt="">   {{yourTeam.Name}}! This is your team dashboard.</strong> 
  <br><br><br>
- <table class = "table table-dark">
+ <div class = 'table-responsive'><table class = "table  table-hover table-dark">
   <tr>
-    <th>Week</th>
-    <th>Date</th> 
-    <th>Opponent</th>
-    <th>Time</th>
+    <th class = "text-center"><p>Week</p></th>
+    <th class = "text-center">Date</th> 
+    <th class = "text-center">Opponent</th>
+    <th  height = "10%"class = "text-center">Time</th>
   </tr>
    {{#each team}}
   <tr>
-    <td>{{this.week}}</td>
-    <td>{{this.date}}</td> 
-    <td>  <form action="/game/{{this.id}}" method="POST" ><button class ="btn btn-dark" id = "game-button" type = "submit" value = "{{this.id}}" style = "background-color: transparent">@ <img src="/images/team-logos/{{this.homeTeam.Abbreviation}}.png" alt="" height = "30px" width = "30px";> {{this.homeTeam.Abbreviation}}</button></form></td>
-    <td>{{this.time}}</td>
+    <td class = "text-center">{{this.week}}</td>
+    <td class = "text-center">{{this.date}}</td> 
+    <td class = "text-center">  
+        <form action="/game/{{this.id}}" method="GET" >
+        <input name ="gameId" value ="{{this.id}}" type ="hidden">
+        <button class ="btn btn-dark" id = "game-button" type = "submit" value = "{{this.id}}" style = "background-color: transparent">
+            @ 
+            <img src="/images/team-logos/{{this.homeTeam.Abbreviation}}.png" alt="" height = "30px" width = "30px"> 
+            {{this.homeTeam.Abbreviation}}</button></form></td>
+    <td class = "text-center">{{this.time}}</td>
   </tr>
  {{/each}}
  </table>
+ </div>

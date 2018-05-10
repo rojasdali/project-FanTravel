@@ -1,0 +1,31 @@
+<div id="main"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+
+{{currentUser}}
+{{#each theGame}}
+    {{ this.week }}
+    {{ this.scheduleStatus }}
+{{/each}}
+
+
+
+<form id="form" action="/create" method="POST">
+    <label for="name">Post a comment</label><br>
+    <input type="text" name="add"
+      placeholder="Where's the best tailgate?">
+      <button>Post</button>
+      </form>
+
+    
+    {{#each comment}}
+       <p>{{this.text}}</p>
+
+       <button id = {{this.userId}}>Edit</button>
+       <button id = {{this.userId}}>Delete</button>
+    {{/each}}
+
+   
+
+   
