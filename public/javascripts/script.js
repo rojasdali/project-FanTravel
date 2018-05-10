@@ -23,8 +23,45 @@ $(document).ready( () => {
 // }
 
 })
-$(document).on('click', '#game-button', function() { 
+$(document).on('click','#reload',function () {
+  const gameId = this.name
+  console.log(gameId)
+  axios.get('/game/'+gameId)
+  .then(response => {
+    console.log('this ran success')
+  }).catch(err => console.log(err))
+})
+
+$(document).on('click', '#edit', function() { 
+  const commentId = this.name
+  const textVal = $("#"+commentId).val()   
+  let data = {id: commentId,
+      text:textVal }
   
+  axios.post(`/edit/`, data)
+  .then(response => {
+      console.log("success",data)
+      location.reload()
+  })
+  .catch(err => {
+      console.log(err);
+  })
+ 
+});
+
+$(document).on('click', '#delete', function() { 
+  const commentId = this.name
+  let data = {id: commentId}
+  // alert('clicked!')
+  axios.post(`/delete`, data)
+  .then(response => {
+      console.log("success",data)
+      location.reload()
+  })
+  .catch(err => {
+      console.log(err);
+  })
+ 
 });
 
 

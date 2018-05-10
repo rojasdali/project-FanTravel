@@ -31,7 +31,7 @@ authRoutes.get("/login", (req, res, next) => {
   authRoutes.get("/teamPage", (req, res, next) => {
      let user = req.session.currentUser
      let team = res.locals.team
-     console.log(team)
+    // console.log(team)
     res.render("authentication/teamPage", {user})
   });
 
@@ -56,7 +56,7 @@ authRoutes.get("/login", (req, res, next) => {
       //console.log("this is the game ", theGame)
       Comment.find({gameId: someGameId})
      .then(comments => {
-      console.log(req.session.currentUser)
+      //console.log(req.session.currentUser)
       
     comments.forEach(oneComment => {
       // oneComment.userId.equals(req.user.id)
@@ -67,6 +67,7 @@ authRoutes.get("/login", (req, res, next) => {
     })
       res.locals.comment = comments
       res.locals.game = theGame
+      console.log(theGame)
       res.render('authentication/gamePage',{someGameId})
         // res.render('authentication/gamePage', {isOwner});
      })
@@ -145,7 +146,7 @@ stringDate = stringDate.map(elem => {
 })
 deptTwoBefore = new Date(stringDate[0],stringDate[1],stringDate[2]-2)
 returnOneAfter = new Date(stringDate[0],stringDate[1],stringDate[2]+1)
-console.log('this dept two' , deptTwoBefore, returnOneAfter)
+//console.log('this dept two' , deptTwoBefore, returnOneAfter)
 var backToString = new Date(deptTwoBefore),
         month = '' + (backToString.getMonth()+1),
         day = '' + backToString.getDate(),
@@ -192,7 +193,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
        let day = schedule.date.getDate() + 1
        schedule.date.setDate(day)
        schedule.date = schedule.date.toDateString()
-       console.log(flightDates)
+       //console.log(flightDates)
       Team.find({abbr: schedule.homeTeam.Abbreviation})
       .then(team => {
       //console.log(team[0].airport)
@@ -200,7 +201,6 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
       // axios.get(`https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=QpXyD4VfMAqlAGjQdQ3pk2VmtEC3lBE1&origin=${teamAbbr}&destination=${team[0].airport}&departure_date=${flightDates[0]}&return_date=${flightDates[1]}&number_of_results=1`)
       // .then(flight => {
       //   const flights = (flight.data.results[0].fare.total_price)
-        
       //   console.log(flights)
       //    let data = {}
       //    data.flightList = flights
@@ -209,7 +209,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
       //  // console.log(awaySchedule)
       //   //console.log(res.locals.team)
       //   // res.render('authentication/teamPage')
-       
+        
       // }).catch(err => {
       //   next(err);
       // })
@@ -232,6 +232,36 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
  
   })
 })
+
+
+authRoutes.post('/edit', (req, res, next) => {
+  console.log(req.body)
+
+  Comment.findByIdAndUpdate(req.body.id, {text: req.body.text})
+   .then(res => {
+     console.log("function passed")
+   })
+  .catch(err => {
+    console.log(err)
+  })
+    res.render('authentication/gamePage') 
+ })
+
+
+ authRoutes.post('/delete', (req, res, next) => {
+  console.log(req.body)
+
+  Comment.findOneAndRemove({_id: req.body.id})
+   .then(res => {
+     console.log("function passed")
+    
+   })
+  .catch(err => {
+    console.log(err)
+  })
+  res.render('authentication/gamePage') 
+ })
+  
   authRoutes.post("/login", (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;

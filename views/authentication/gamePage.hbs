@@ -1,11 +1,13 @@
-<div id="main"></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+
+<head> <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+
+</head>
 
 {{#each game}}
-    {{ this.week }}
-    {{ this.scheduleStatus }}
+   Week {{ this.week }}
+        {{this.awayTeam.City}}{{this.awayTeam.Name}}
+        @
+        {{this.homeTeam.City}}{{this.homeTeam.Name}}
 {{/each}}
 
 
@@ -19,11 +21,15 @@
 
     
     {{#each comment}}
+    <button hidden  id = 'reload' name = {{this.gameId}}></button>
        Comment on {{this.created_at}} from: {{this.email}} <p>{{this.text}}</p>
        {{#if this.isOwner}}
-       <button class = 'btn btn-primary'>Edit</button>
-       <button class = 'btn btn-primary'>Delete</button>
+       <input type = "text" id = "{{this._id}}" placeholder="edit this comment" value ="">
+       <button id = "edit" name = "{{this._id}}"class = 'btn btn-primary'>Edit</button>
+    
+       <button id = 'delete' name = {{this._id}} class = 'btn btn-primary'>Delete</button>
        {{/if}}
+       <br>
        
     {{/each}}
 

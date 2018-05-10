@@ -1,10 +1,15 @@
+<head>
+   <link rel="stylesheet" href="stylesheets/style.css">
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
 
+ </head>
 <h1>Team page</h1>
 {{flightList}}
 {{#each flightList}} <p>{{this}}</p> {{/each}}
 <strong>Welcome, {{currentUser.name}}. Go <img src="/images/team-logos/{{yourTeam.Abbreviation}}.png" alt="">   {{yourTeam.Name}}! This is your team dashboard.</strong> 
  <br><br><br>
- <div class = 'table-responsive'><table class = "table  table-hover table-dark">
+ <div class = 'table-responsive'>
+   <table class = "table  table-hover table-dark">
   <tr>
     <th class = "text-center"><p>Week</p></th>
     <th class = "text-center">Date</th> 
