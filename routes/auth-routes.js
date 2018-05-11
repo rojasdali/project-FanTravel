@@ -35,6 +35,15 @@ authRoutes.get("/login", (req, res, next) => {
     res.render("authentication/teamPage", {user})
   });
 
+  authRoutes.get("/dash", (req, res, next) => {
+     
+   console.log(req.session.currentUser)
+   res.redirect("/schedule/"+req.session.currentUser.team.abbr)
+ });
+
+
+
+
   authRoutes.get("/game/:id", (req,res,next) => {
     let user = req.session.currentUser
     axios({
@@ -67,7 +76,8 @@ authRoutes.get("/login", (req, res, next) => {
     })
       res.locals.comment = comments
       res.locals.game = theGame
-      console.log(theGame)
+      req.session.gameId = theGame
+      //console.log(theGame)
       res.render('authentication/gamePage',{someGameId})
         // res.render('authentication/gamePage', {isOwner});
      })
@@ -90,6 +100,7 @@ authRoutes.get("/login", (req, res, next) => {
         // console.log(res)
       })
       .catch(err => {console.log(err)})
+      
       res.redirect('/game/'+req.params.id)
     })
 
@@ -303,6 +314,12 @@ authRoutes.post("/schedule/:team", passport.authenticate("local",
   passReqToCallback: true
 }
 ));
+
+
+authRoutes.get("/logout", (req, res) => {
+  req.logout();
+  res.redirect("/");
+});
 
 // authRoutes.get("/logout", (req, res) => {
 //   req.logout();

@@ -1,12 +1,23 @@
 <head>
-   <link rel="stylesheet" href="stylesheets/style.css">
- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+   <link rel="stylesheet" href="/stylesheets/style.css">
+   <div class="preloader">
+	<div class="sk-spinner sk-spinner-rotating-plane"></div>
+</div>
+ {{!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"> --}}
 
  </head>
-<h1>Team page</h1>
-{{flightList}}
-{{#each flightList}} <p>{{this}}</p> {{/each}}
-<strong>Welcome, {{currentUser.name}}. Go <img src="/images/team-logos/{{yourTeam.Abbreviation}}.png" alt="">   {{yourTeam.Name}}! This is your team dashboard.</strong> 
+
+
+{{flights}}
+<div class = "container"> 
+  <div class = "row">
+    <br>    <br>    <br>    <br>
+  <div class="col-md-6 col-md-offset-3">
+<strong>Welcome, {{currentUser.name}}. Go <img src="/images/team-logos/{{yourTeam.Abbreviation}}.png" alt="">   {{yourTeam.Name}}! This is your team dashboard.</strong>
+</div> 
+</div>
+ </div>
+
  <br><br><br>
  <div class = 'table-responsive'>
    <table class = "table  table-hover table-dark">
@@ -23,7 +34,7 @@
     <td class = "text-center">  
         <form action="/game/{{this.id}}" method="GET" >
         <input name ="gameId" value ="{{this.id}}" type ="hidden">
-        <button class ="btn btn-dark" id = "game-button" type = "submit" value = "{{this.id}}" style = "background-color: transparent">
+        <button class ="btn btn-dark" id = "game-button" value = "{{this.id}}" style = "background-color: transparent">
             @ 
             <img src="/images/team-logos/{{this.homeTeam.Abbreviation}}.png" alt="" height = "30px" width = "30px"> 
             {{this.homeTeam.Abbreviation}}</button></form></td>
