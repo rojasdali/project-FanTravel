@@ -37,7 +37,7 @@ authRoutes.get("/login", (req, res, next) => {
 
   authRoutes.get("/dash", (req, res, next) => {
      
-   console.log(req.session.currentUser)
+  //  console.log(req.session.currentUser)
    res.redirect("/schedule/"+req.session.currentUser.team.abbr)
  });
 
@@ -209,7 +209,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
       .then(team => {
       //console.log(team[0].airport)
       //have the destination airport here for flights query
-      // axios.get(`https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=QpXyD4VfMAqlAGjQdQ3pk2VmtEC3lBE1&origin=${teamAbbr}&destination=${team[0].airport}&departure_date=${flightDates[0]}&return_date=${flightDates[1]}&number_of_results=1`)
+      // axios.get(`https://api.sandbox.amadeus.com//v1.2/flights/low-fare-search?apikey=y4neYjDWHHi02WKPWsqDvnrdrLqLGN7l&origin=${teamAbbr}&destination=${team[0].airport}&departure_date=${flightDates[0]}&return_date=${flightDates[1]}&number_of_results=1`)
       // .then(flight => {
       //   const flights = (flight.data.results[0].fare.total_price)
       //   console.log(flights)
@@ -238,7 +238,8 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
     // res.locals.flight = flight
     // console.log(awaySchedule)
     //console.log(res.locals.team)
-    res.render('authentication/teamPage')     
+   res.render('authentication/teamPage')
+     
     
  
   })
@@ -246,7 +247,7 @@ authRoutes.get('/schedule/:team',(req,res,next) => {
 
 
 authRoutes.post('/edit', (req, res, next) => {
-  console.log(req.body)
+  // console.log(req.body)
 
   Comment.findByIdAndUpdate(req.body.id, {text: req.body.text})
    .then(res => {
@@ -260,7 +261,7 @@ authRoutes.post('/edit', (req, res, next) => {
 
 
  authRoutes.post('/delete', (req, res, next) => {
-  console.log(req.body)
+  // console.log(req.body)
 
   Comment.findOneAndRemove({_id: req.body.id})
    .then(res => {
@@ -352,3 +353,5 @@ authRoutes.get("/logout", (req, res) => {
 
 
 module.exports = authRoutes;
+
+
